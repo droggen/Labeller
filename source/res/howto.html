@@ -1,0 +1,103 @@
+<h2 align="center">Labeller</h2>
+
+<p>
+Labeller is a minimalistic labelling tool for files containing time series data.
+</p>
+
+<h3>Quick start</h3>
+<p>
+<ol>
+   <li>Load a dataset. See <a href="#dataset">Dataset format</a> for information on the dataset format.</li>
+   <li>Set a <a href="#format">dataset visualisation format</a> by specifying a format string.</li>
+   <li>Set the <a href="#null">null class values</a>.</li>
+   <li>Select <i>Apply</i>.</li>
+   <li>Select which is the column containing the label channel and press <i>Confirm label</i>.</li>
+   <li><a href="#annotation">Annotate the data</a>.</li>
+   <li>Save a project or export the annotated data.</li>
+</ol>
+</p>
+<p>
+The software offers additional features:
+<ul>
+   <li>A new data channel can be added from the Edit menu. This may be used to add an annotation channel to a data file.</li>
+</ul>
+</p>
+
+<h3><a name="dataset">Dataset format</a></h3>
+<p>
+Datasets are text files containing a matrix of data separated by space and newline.
+Each line corresponds to a sample.
+Each column corresponds to a data channel.
+</p>
+<p>
+The labels of the data are stored as one channel of the dataset.
+Each sample can potentially have a different label.
+In practice, however, labelling highlights <i>instances</i> which are contiguous segments of data tagged with the same label.
+</p>
+
+
+<h3><a name="format">Visualization format</a></h3>
+<p>
+The way the signal traces are displayed are specified by a display format string.
+This string indicates how many scopes are on screen and which traces they should show.
+</p>
+<p>
+The syntax is: <i>&lt;title;traces[;xscale=xs][;yscale=auto|min max][;color=colors]&gt;&lt;......</i>
+<ul>
+   <li>title: title of the scope</li>
+   <li>traces: space separated list of traces to display (0=first trace, ...)</li>
+   <li>xscale: horizontal scale. 1=default. Positive value: zoom in. Negative value: zoomout</li>
+   <li>yscale: vertical scale. automatic (auto) or manual (min max)</li>
+   <li>colors: space separated list of trace colors in hexadecimal format RRGGBB </li>
+</ul>
+</p>
+<h4>Example</h4>
+<p>
+The format string below shows two scopes. Each scope contains 3 traces: the first contains the traces 0, 1, and 2, and the second contains the traces 3, 4, and 5.
+</p>
+<p>
+<i>
+&lt;Acceleration;0 1 2;yscale=-4000 4000;color=ff0000 00ff00 0000ff&gt;
+&lt;Gyroscope;3 4 5;yscale=auto&gt;
+</i>
+</p>
+<p>
+The following display format string displays two scopes. The first shows traces number 5, 6 and 7, in red, green and blue respectively, with manual vertical scale, default horizontal scale, and the title Calibrated.
+</p>
+<p>
+<i>&lt;Calibrated;5 6 7;xscale=1;yscale=-3300 3300 ;color=ff0000 ff00 ff&gt;&lt;Raw;2 3 4;xscale=-2;yscale=auto ;color=ff0000 ff00 ff&gt;</i>
+</p>
+
+
+
+<h3><a name="null">Null class</a></h3>
+<p>
+The data instances (i.e. contiguous samples with the same label value) are rendered differently
+to distinguish <i>null</i> and <i>non-null</i> instances.
+</p>
+<p>Null instances are not outlined; as if they were a non-interesting part of the dataset.
+Non-null instances, however, are outlined.
+The timespan of non-null instances can be edited through this software.
+</p>
+</p>
+<p>
+The labels corresponding to <i>null</i> can be specified in the <i>Null class labels</i> field.
+Multiple null labels can be specified.
+The first null label is the one used by default when an instance is resized or erased.
+</p>
+
+<h3><a name="annotation">Data annotation</a></h3>
+<p>
+The data can be annotated as follows:
+<ul>
+   <li>The edges of an instance can be grabbed and moved by a mouse right-click and drag.</li>
+   <li>A new instance can be added by a mouse right-click and drag.
+      This is possibly anywhere far from an existing instance edge.</li>
+   <li>An existing instance can be deleted by pressing the <i>Del</i> key while hovering over the instance</li>
+
+</ul>
+</p>
+
+
+
+

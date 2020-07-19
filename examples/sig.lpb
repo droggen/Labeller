@@ -1,0 +1,5 @@
+[General]
+FormatString="<Some signal example - label in channel 2;0 1 2 ;xscale=1;yscale=auto;color=ff0000 00ff00 0000ff>"
+NullLabels="2 4 "
+LabelChannel=2
+Datafile=examples/sig.txt

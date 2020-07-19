@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/cursor-toleft.png</file>
+        <file>img/cursor-toright.png</file>
+        <file>img/cursor-toleft2.png</file>
+        <file>img/cursor-toright2.png</file>
+        <file>res/howto.html</file>
+    </qresource>
+</RCC>
