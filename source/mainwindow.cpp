@@ -108,7 +108,11 @@ void MainWindow::uiSetToNoDataset()
     ui->uile_formatstring->setEnabled(false);
     ui->uile_null_label->setEnabled(false);
     ui->uisb_labelchannel->setEnabled(false);
+    // Same with menus
     ui->action_Add_column->setEnabled(false);
+    ui->action_Export_dataset->setEnabled(false);
+    ui->action_Undo_label_change->setEnabled(false);
+    ui->action_Save_project->setEnabled(false);
 
     // Set some of the parameters
     ui->uile_formatstring->setText(""); formatstring="";
@@ -122,6 +126,14 @@ void MainWindow::uiSetToNoDataset()
     ui->uil_data_foldername->setText("");
     ui->uil_data_size->setText("");
 
+}
+/*
+ * Deactivate all the UI elements while a dataset is - builds on uiSetToNoDataset
+*/
+void MainWindow::uiSetToLoadingDataset()
+{
+    uiSetToNoDataset();
+    ui->uil_data_filename->setText("Loading...");
 }
 /*
  * Activate all the UI elements when a dataset is loaded
@@ -168,6 +180,11 @@ void MainWindow::uiPrepareDefaultFromDataset()
 }
 void MainWindow::on_action_Load_triggered()
 {
+    //loadPromptSync();
+    loadPromptAsync();
+}
+void MainWindow::loadPromptSync()
+{
     // Pop up window
     QString fileName = QFileDialog::getOpenFileName(this, "Load data",QString(),"Data (*.dat *.txt);;All files (*)");
 
@@ -178,11 +195,95 @@ void MainWindow::on_action_Load_triggered()
     // Clear all dataset and state variables
     clearAllState();
     // Set the UI to no dataset (deactivate the UI elements)
-    uiSetToNoDataset();
+    //uiSetToNoDataset();
+    uiSetToLoadingDataset();
 
     // Try load dataset; failure: return
     if(loadDataset(fileName)!=0)
+    {
+        uiSetToNoDataset();
         return;
+    }
+
+    // Setup UI according to loaded dataset
+    uiPrepareDefaultFromDataset();
+    viewsCreate();
+    uiSetToDataset();
+
+}
+void MainWindow::loadPromptAsync()
+{
+    // Asynchronous loading for webassembly
+
+    // Clear all dataset and state variables
+    clearAllState();
+    // Set the UI to no dataset (deactivate the UI elements)
+    uiSetToNoDataset();
+
+
+    auto fileContentReady = [this](const QString &fileName, const QByteArray &fileContent) {
+        printf("fileContentReady: this: %p\n",this);
+        this->loadAsynCompleted(fileName,fileContent);
+    };
+    printf("Prior to call: this: %p\n",this);
+    QFileDialog::getOpenFileContent("Data (*.dat *.txt);;All files (*)", fileContentReady);
+
+    // Now the data is asynchronously loading
+    //uiSetToLoadingDataset();
+}
+
+
+void MainWindow::toto(const QString &fileName, const QByteArray &fileContent)
+{
+    printf("toto!\n");
+    if(fileName.isEmpty())
+    {
+        printf("file not specified\n");
+    }
+    else
+    {
+        printf("File: %s. Size: %d\n",fileName.toStdString().c_str(),fileContent.size());
+    }
+}
+
+void MainWindow::loadAsynCompleted(const QString &fileName, const QByteArray &fileContent)
+{
+    printf("loadAsynCompleted\n");
+    if(fileName.isEmpty())
+    {
+        printf("No file selected\n");
+        return;
+    }
+
+    printf("File: %s. Size: %d\n",fileName.toStdString().c_str(),fileContent.size());
+    QFileInfo fileInfo(fileName);
+    QString filename_nopath = fileInfo.fileName();
+    QString filename_path = fileInfo.path();
+    printf("File no path: %s\n",filename_nopath.toStdString().c_str());
+    printf("File path: %s\n",filename_path.toStdString().c_str());
+
+
+    dataset.filename = fileName.toStdString();
+    dataset.filename_nopath = fileName.toStdString();
+    dataset.filename_path = "<No path>";
+
+    int rv;
+    QByteArray fc = fileContent;
+    dataset.data = LoadSignalFromByteArray(fc,rv, true);
+
+    if(rv!=0)
+    {
+        QMessageBox::critical(this,"Error", "Error loading file");
+        uiSetToNoDataset();
+        return;
+    }
+
+    dataset.sx = (unsigned)dataset.data.size();
+    dataset.sy = (unsigned)dataset.data[0].size();
+
+    terminalPrint(QString("Loaded: %1\n").arg(QString::fromStdString(dataset.filename_nopath)));
+    printf("Loading: %s\n",dataset.filename.c_str());
+    terminalPrint(QString("Dataset is %1 x %2\n").arg(dataset.sy).arg(dataset.sx));
 
     // Setup UI according to loaded dataset
     uiPrepareDefaultFromDataset();
@@ -1305,7 +1406,21 @@ std::vector<std::vector<int> > MainWindow::LoadSignalFile(std::string file,int &
 
    return data;
 }
+std::vector<std::vector<int> > MainWindow::LoadSignalFromByteArray(QByteArray &filedata,int &rv, bool report)
+{
+    (void) report;
+    std::vector<std::vector<int> > data;
+    rv=0;
+    bool ok;
+    data = parse(filedata.data(),ok);
+    if(!ok)
+    {
+       rv=-2;
+       return data;
+    }
 
+    return data;
+}
 
 void MainWindow::on_action_How_to_triggered()
 {

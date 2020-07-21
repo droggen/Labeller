@@ -285,6 +285,7 @@ QString GraphToString(vector<int> g)
    Return: vector[column][line]
 **/
 #if 1
+//std::vector<std::vector<int> > parse(char *data,bool &ok)
 std::vector<std::vector<int> > parse(char *data,bool &ok)
 {
     unsigned pok;

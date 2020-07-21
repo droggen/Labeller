@@ -104,6 +104,7 @@ private:
     // ---------------------------------------------------------
     // UI   UI   UI   UI   UI   UI   UI   UI   UI   UI   UI   UI
     void uiSetToNoDataset();
+    void uiSetToLoadingDataset();
     int uiSetToDataset();
 
     // ---------------------------------------------------------
@@ -154,12 +155,18 @@ private:
     void clearLabelStructures();
 
     std::vector<std::vector<int> > LoadSignalFile(std::string file,int &rv, bool report);
+    std::vector<std::vector<int> > LoadSignalFromByteArray(QByteArray &filedata, int &rv, bool report);
 
     int nulllabelStringToVec(QString str,std::vector<int> &nl);
     QString nulllabelVecToString(std::vector<int> nulllabels);
 
     int saveSettings(QString ini);
     int loadSettings(QString fileName);
+
+    void loadPromptSync();
+    void loadPromptAsync();
+    static void toto(const QString &fn, const QByteArray &ba);
+    void loadAsynCompleted(const QString &fileName, const QByteArray &fileContent);
 };
 
 

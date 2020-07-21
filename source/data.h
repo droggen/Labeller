@@ -239,7 +239,7 @@ vector<RELATIONS> FindGraphs(RELATIONS Relations);
 //void ResampleStuff(vector<RELATIONS> Graphs);
 void DoubleToRatio(double v,int &n,int &d,int maxd=10000);
 QString GraphToString(vector<int> g);
-std::vector<std::vector<int> > parse(char *data,bool &ok);
+std::vector<std::vector<int> > parse(char *data, bool &ok);
 void ComputeAllSourceOffsetFrom(RELATIONS &RelationsActive,int sourceidx,int value,std::map<int,int> &offsetout);
 
 
