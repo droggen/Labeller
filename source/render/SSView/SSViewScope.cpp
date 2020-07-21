@@ -192,7 +192,7 @@ void SSViewScope::enterEvent(QEvent *event)
 {
     (void) event;
     //printf("Enter event - grab keyboard\n");
-    plotwidget->grabKeyboard();
+    //plotwidget->grabKeyboard();
 
 }
 void SSViewScope::leaveEvent(QEvent *event)
@@ -200,7 +200,7 @@ void SSViewScope::leaveEvent(QEvent *event)
     (void) event;
     //printf("Leave event - ungrab keyboard\n");
 
-    plotwidget->releaseKeyboard();
+    //plotwidget->releaseKeyboard();
 
     emit Leaved();
 }

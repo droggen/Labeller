@@ -59,6 +59,12 @@ MainWindow::MainWindow(QWidget *parent)
     //scale=2;      // Tryout scale
 
 
+    // Connect ourselves to ourselves
+    QMetaObject::Connection c = connect(this,SIGNAL(signalErrorDialog(QString)),this,SLOT(errorDialog(QString)),Qt::QueuedConnection);
+    connect(this,SIGNAL(signalAddColumn_GetLabel()),this,SLOT(slotAddColumn_GetLabel()),Qt::QueuedConnection);
+
+
+
 }
 
 MainWindow::~MainWindow()
@@ -1777,27 +1783,27 @@ void MainWindow::addColumnAsync()
 
     // Asynchronous call to dialog boxes for webassembly
     std::function<void (bool,int)> callback=[=](bool ok, int col) {
-                    printf("addColumnAsync lambda callback: ok: %d v: %d\n",(int)ok,col);
+                    //QString s1;
+                    //s1.sprintf("Add column: ok: %d column: %d\n",(int)ok,col);
+                    //terminalPrint(s1);
                     if(ok==false)
+                    {
                         return;
+                    }
                     // Column was returned, so create second dialog
                     if(col<0 || col>(int)dataset.sx)
                     {
-                        QMessageBox::critical(this,"Error",QString("Invalid column number; it must be in the range [0;%1]").arg(dataset.sx));
+                        QString s2;
+                        s2.sprintf("Invalid column number: it must be in the range [0;%d]\n",dataset.sx);
+                        terminalPrint(s2);
                         return;
                     }
-                    // Column is ok - get the label
+                    // Column is ok - keep
+                    _addcolumn_col = col;
+                    // Emit a signal to get the label
+                    emit signalAddColumn_GetLabel();
 
-                    std::function<void (bool,int)> callback2=[=](bool ok, int label) {
-                        printf("addColumnAsync lambda callback 2: ok: %d v: %d\n",(int)ok,label);
 
-                        if(ok)
-                        {
-                            addColumnAt(col,label);
-                        }
-                    };
-
-                    dialogGetLabelID2(callback2);
 
 
                 };
@@ -1805,19 +1811,68 @@ void MainWindow::addColumnAsync()
 
     dialogGetLabelID2(callback,QString("New column location (0 is leftmost; %1 is rightmost)").arg(dataset.sx),"Enter new column location");
 
+    //terminalPrint("After dialogGetLabelID2\n");
+
 }
 
 
+void MainWindow::errorDialog(QString text)
+{
+    terminalPrint(QString("errorDialog before: ")+text+QString("\n"));
+    QMessageBox::critical(this,"Test",text);
+
+
+
+    terminalPrint(QString("errorDialog after: ")+text+QString("\n"));
+}
+void MainWindow::slotAddColumn_GetLabel()
+{
+    //terminalPrint("In slotAddColumn_GetLabel\n");
+
+    std::function<void (bool,int)> callback2=[=](bool ok, int label) {
+        //QString s3;
+        //s3.sprintf("Add column - label selection: ok: %d label: %d; the column was: %d\n",(int)ok,label,_addcolumn_col);
+        //terminalPrint(s3);
+
+        if(ok)
+        {
+            addColumnAt(_addcolumn_col,label);
+        }
+    };
+    dialogGetLabelID2(callback2);
+
+
+}
 void MainWindow::on_pushButton_clicked()
 {
+    //setCursor(curleft);
+    //setCursor(Qt::SplitHCursor);
+
+    /*
     // Try some dialog
-/*
+
+
+    //QMessageBox::critical(this,"Test","Test 1");
+    //QMessageBox::critical(this,"Test","Test 2");
+
+    emit signalErrorDialog("Signal 1");
+    emit signalErrorDialog("Signal 2");
+
+    return;
+
+
     std::function<void (bool,int)> callback=[=](bool ok, int v) {
                     printf("lambda callback: ok: %d v: %d\n",(int)ok,v);
+                    ui->uil_data_filename->setText(QString("dialog was clicked with %1 and %2\n").arg((int)ok).arg(v));
+                    //QMessageBox::critical(this,"Test","Test 1");
+                    //QMessageBox::critical(this,"Test","Test 2");
+                    emit signalErrorDialog(" try e"
+                                           "something");
+                    ui->uil_data_foldername->setText(QString("Try again dialog was clicked with %1 and %2\n").arg((int)ok).arg(v));
                 };
 
 
     dialogGetLabelID2(callback,"Test input","Test title");
-*/
-    addColumnAsync();
+
+    //addColumnAsync();*/
 }

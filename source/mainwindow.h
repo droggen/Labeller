@@ -103,6 +103,8 @@ private:
 
     unsigned scale;
 
+    unsigned _addcolumn_col;
+
     // ---------------------------------------------------------
     // UI   UI   UI   UI   UI   UI   UI   UI   UI   UI   UI   UI
     void uiSetToNoDataset();
@@ -176,6 +178,13 @@ private:
     void loadAsynCompleted(const QString &fileName, const QByteArray &fileContent);
     void exportSync();
     void exportAsync();
+
+signals:
+    void signalErrorDialog(QString text);
+    void signalAddColumn_GetLabel();
+private slots:
+    void errorDialog(QString text);
+    void slotAddColumn_GetLabel();
 };
 
 

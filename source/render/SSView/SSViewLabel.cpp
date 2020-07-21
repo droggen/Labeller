@@ -167,14 +167,14 @@ void SSViewLabel::enterEvent(QEvent *event)
 {
     (void) event;
     //printf("enter event - grab\n");
-    plotwidget->grabKeyboard();
+    //plotwidget->grabKeyboard();
 
 }
 void SSViewLabel::leaveEvent(QEvent *event)
 {
     (void) event;
     //printf("leave event - ungrab\n");
-    plotwidget->releaseKeyboard();
+    //plotwidget->releaseKeyboard();
 
 
     emit Leaved();
