@@ -104,7 +104,6 @@ private:
     // ---------------------------------------------------------
     // UI   UI   UI   UI   UI   UI   UI   UI   UI   UI   UI   UI
     void uiSetToNoDataset();
-    void uiSetToLoadingDataset();
     int uiSetToDataset();
 
     // ---------------------------------------------------------
@@ -167,6 +166,8 @@ private:
     void loadPromptAsync();
     static void toto(const QString &fn, const QByteArray &ba);
     void loadAsynCompleted(const QString &fileName, const QByteArray &fileContent);
+    void exportSync();
+    void exportAsync();
 };
 
 

@@ -128,14 +128,6 @@ void MainWindow::uiSetToNoDataset()
 
 }
 /*
- * Deactivate all the UI elements while a dataset is - builds on uiSetToNoDataset
-*/
-void MainWindow::uiSetToLoadingDataset()
-{
-    uiSetToNoDataset();
-    ui->uil_data_filename->setText("Loading...");
-}
-/*
  * Activate all the UI elements when a dataset is loaded
 */
 int MainWindow::uiSetToDataset()
@@ -148,7 +140,11 @@ int MainWindow::uiSetToDataset()
     ui->uile_formatstring->setEnabled(true);
     ui->uile_null_label->setEnabled(true);
     ui->uisb_labelchannel->setEnabled(true);
+    // Same with menus
     ui->action_Add_column->setEnabled(true);
+    ui->action_Export_dataset->setEnabled(true);
+    ui->action_Undo_label_change->setEnabled(true);
+    ui->action_Save_project->setEnabled(true);
 
     // Update info about dataset in UI
     ui->uil_data_filename->setText(QString::fromStdString(dataset.filename_nopath));
@@ -195,8 +191,7 @@ void MainWindow::loadPromptSync()
     // Clear all dataset and state variables
     clearAllState();
     // Set the UI to no dataset (deactivate the UI elements)
-    //uiSetToNoDataset();
-    uiSetToLoadingDataset();
+    uiSetToNoDataset();
 
     // Try load dataset; failure: return
     if(loadDataset(fileName)!=0)
@@ -1587,6 +1582,11 @@ void MainWindow::on_action_About_triggered()
 
 void MainWindow::on_action_Export_dataset_triggered()
 {
+    //exportSync();
+    exportAsync();
+}
+void MainWindow::exportSync()
+{
     // Export annotated dataset
     QString t="Save data";
     QString fileName = QFileDialog::getSaveFileName(this,t,QString::fromStdString(dataset.filename),"Text (*.txt)");
@@ -1615,8 +1615,32 @@ void MainWindow::on_action_Export_dataset_triggered()
         s+="\n";
         out << s;
     }
-
+    out.flush();
     file.close();
+}
+void MainWindow::exportAsync()
+{
+    // Create the data buffer
+    printf("%d %d\n",dataset.sx,dataset.sy);
+    QByteArray ba;
+    // Stream writer...
+    QTextStream out(&ba);
+    for(unsigned y=0;y<dataset.sy;y++)
+    {
+        QString s = "";
+        for(unsigned x=0;x<dataset.sx;x++)
+        {
+            s+=QString("%1 ").arg(dataset.data[x][y]);
+        }
+        s+="\n";
+        out << s;
+    }
+    out.flush();
+
+    printf("ba size: %d\n",ba.size());
+
+    // Prompt to save the data
+    QFileDialog::saveFileContent(ba, QString::fromStdString(dataset.filename));
 
 
 }
