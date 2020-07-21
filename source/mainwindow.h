@@ -148,6 +148,7 @@ private:
     //int dialogGetLabelID2(bool &ok, QString expl="Label ID:", QString title="Enter the label ID", std::function<bool, int> callback);
     void dialogGetLabelID2(std::function<void (bool,int)> callback, QString expl="Label ID:", QString title="Enter the label ID");
     void setLabelChannel(int arg1);
+    void addColumnAt(int col,int label);
 
     int checkFormatString(ScopesDefinition &scopesdef);
     int checkNullLabels(std::vector<int> &nl);

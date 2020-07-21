@@ -588,12 +588,26 @@ void MainWindow::on_View_mouseReleased(Qt::MouseButton button, int samplex)
        {
            // Painting
            printf("Finished painting from %d to %d.\n",instanceedited.at,samplex);
+#if 0
+           // Synchronous implementation
            // Query label
            bool ok;
            int v = dialogGetLabelID(ok);
            // If ok, add label
            if(ok)
             instanceAdd(instanceedited.at,samplex,v);
+#endif
+           // Asynchronous implementation
+           // Query label
+           std::function<void (bool,int)> callback=[=](bool ok, int v) {
+            printf("Callback add label %d %d\n",(int)ok,v);
+                if(ok)
+                    instanceAdd(instanceedited.at,samplex,v);
+           };
+
+           dialogGetLabelID2(callback);
+
+
 
        }
        isgrabbing=false;
@@ -1700,8 +1714,9 @@ void MainWindow::on_View_zoomHReseted()
 
 void MainWindow::on_action_Add_column_triggered()
 {
-    printf("Add column\n");
-    addColumnSync();
+    //printf("Add column\n");
+    //addColumnSync();
+    addColumnAsync();
 }
 void MainWindow::addColumnSync()
 {
@@ -1727,6 +1742,11 @@ void MainWindow::addColumnSync()
     if(!ok)
         return;
 
+    addColumnAt(col,label);
+}
+// Add the column
+void MainWindow::addColumnAt(int col,int label)
+{
 
     printf("Adding label column at %d with label value %d\n",col,label);
 
@@ -1746,24 +1766,58 @@ void MainWindow::addColumnSync()
     ui->uisb_labelchannel->setMaximum(dataset.sx-1);
 
     viewsCreate();
-
-
 }
+
 void MainWindow::addColumnAsync()
 {
+    // Sanity
+    assert(dataset.sx>=1);
+    assert(dataset.sy>=1);
+
+
     // Asynchronous call to dialog boxes for webassembly
+    std::function<void (bool,int)> callback=[=](bool ok, int col) {
+                    printf("addColumnAsync lambda callback: ok: %d v: %d\n",(int)ok,col);
+                    if(ok==false)
+                        return;
+                    // Column was returned, so create second dialog
+                    if(col<0 || col>(int)dataset.sx)
+                    {
+                        QMessageBox::critical(this,"Error",QString("Invalid column number; it must be in the range [0;%1]").arg(dataset.sx));
+                        return;
+                    }
+                    // Column is ok - get the label
+
+                    std::function<void (bool,int)> callback2=[=](bool ok, int label) {
+                        printf("addColumnAsync lambda callback 2: ok: %d v: %d\n",(int)ok,label);
+
+                        if(ok)
+                        {
+                            addColumnAt(col,label);
+                        }
+                    };
+
+                    dialogGetLabelID2(callback2);
+
+
+                };
+
+
+    dialogGetLabelID2(callback,QString("New column location (0 is leftmost; %1 is rightmost)").arg(dataset.sx),"Enter new column location");
 
 }
+
 
 void MainWindow::on_pushButton_clicked()
 {
     // Try some dialog
-
+/*
     std::function<void (bool,int)> callback=[=](bool ok, int v) {
                     printf("lambda callback: ok: %d v: %d\n",(int)ok,v);
                 };
 
 
     dialogGetLabelID2(callback,"Test input","Test title");
-
+*/
+    addColumnAsync();
 }
