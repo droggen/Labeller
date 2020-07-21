@@ -18,8 +18,14 @@ public:
     void setExplanation(QString str,QString tittle);
     int getLabel(bool &ok);
 
+protected:
+    void done(int r) override;
+
 private:
     Ui::DialogEnterLabel *ui;
+
+signals:
+    void dataEntered(bool ok,int value);
 };
 
 #endif // DIALOGENTERLABEL_H

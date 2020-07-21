@@ -7,15 +7,17 @@ class DLineReader
 {
 
 public:
-	DLineReader();
-	~DLineReader();
+    DLineReader();
+    ~DLineReader();
 
-	void add(const std::string &str);
-	bool getLine(std::string &str);
-	int size();
+    void add(const std::string &str);
+    bool getLine(std::string &str);
+    int size();
+
+
 
 private:
-	std::string buffer;
+    std::string buffer;
 };
 
 #endif // DLINEREADER_H

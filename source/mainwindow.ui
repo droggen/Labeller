@@ -389,6 +389,13 @@
      </widget>
     </item>
     <item>
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="label_8">
       <property name="text">
        <string>Left click: center. Right click: drag edge to resize instance, or add new instance. Delete: remove instance under cursor

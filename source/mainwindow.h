@@ -65,6 +65,8 @@ private slots:
 
     void on_action_Add_column_triggered();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -117,6 +119,9 @@ private:
     unsigned GetNumScopeViews();
     void PrepareDataPlotScope(VIEWID view,vector<vector<int> *> &vd,vector<unsigned> &vc);
 
+    void addColumnSync();
+    void addColumnAsync();
+
     void printScopedefs(ScopesDefinition sd);
     QString createDefaultFormatStringFromDataset(QString filename);
 
@@ -140,6 +145,8 @@ private:
     void updateLabelTraceFromLabelStruct(int updatelast);
 
     int dialogGetLabelID(bool &ok, QString expl="Label ID:", QString title="Enter the label ID");
+    //int dialogGetLabelID2(bool &ok, QString expl="Label ID:", QString title="Enter the label ID", std::function<bool, int> callback);
+    void dialogGetLabelID2(std::function<void (bool,int)> callback, QString expl="Label ID:", QString title="Enter the label ID");
     void setLabelChannel(int arg1);
 
     int checkFormatString(ScopesDefinition &scopesdef);

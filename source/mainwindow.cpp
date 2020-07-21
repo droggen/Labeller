@@ -805,6 +805,20 @@ int MainWindow::dialogGetLabelID(bool &ok,QString expl,QString title)
     return v;
 
 }
+void MainWindow::dialogGetLabelID2(std::function<void (bool,int)> callback,QString expl, QString title)
+{
+    DialogEnterLabel *dialog = new DialogEnterLabel(this);
+    dialog->setExplanation(expl,title);
+    connect(dialog,&DialogEnterLabel::dataEntered,
+                [=](bool ok, int v) {
+                    printf("callback: ok: %d v: %d\n",(int)ok,v);
+                    callback(ok,v);
+                }
+            );
+    dialog->open();
+
+
+}
 void MainWindow::updateLabels()
 {
     createInstanceStructureFromDataset();
@@ -1687,6 +1701,13 @@ void MainWindow::on_View_zoomHReseted()
 void MainWindow::on_action_Add_column_triggered()
 {
     printf("Add column\n");
+    addColumnSync();
+}
+void MainWindow::addColumnSync()
+{
+
+    // BUG: webassembly
+    // http://qtandeverything.blogspot.com/2019/05/exec-on-qt-webassembly.html
 
     // Sanity
     assert(dataset.sx>=1);
@@ -1728,4 +1749,21 @@ void MainWindow::on_action_Add_column_triggered()
 
 
 }
+void MainWindow::addColumnAsync()
+{
+    // Asynchronous call to dialog boxes for webassembly
 
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    // Try some dialog
+
+    std::function<void (bool,int)> callback=[=](bool ok, int v) {
+                    printf("lambda callback: ok: %d v: %d\n",(int)ok,v);
+                };
+
+
+    dialogGetLabelID2(callback,"Test input","Test title");
+
+}

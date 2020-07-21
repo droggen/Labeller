@@ -25,3 +25,27 @@ int DialogEnterLabel::getLabel(bool &ok)
     ok = _ok;
     return v;
 }
+
+void DialogEnterLabel::done(int r)
+{
+    // r=0: cancel
+    // r=1: ok
+
+    printf("DialogEnterLabel::done %d\n",r);
+
+    bool ok;
+    int v = getLabel(ok);
+
+    if(r==1)
+    {
+        printf("DialogEnterLabel: emit %d %d\n",(int)ok,v);
+        emit dataEntered(ok,v);
+    }
+    else
+    {
+        printf("DialogEnterLabel: emit %d %d\n",(int)false,0);
+        emit dataEntered(false,0);
+    }
+
+    QDialog::done(r);
+}
