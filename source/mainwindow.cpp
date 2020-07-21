@@ -7,6 +7,8 @@
 #include <QSettings>
 #include <QScreen>
 #include <QTextStream>
+#include <Qt>
+#include <cassert>
 #include "cio.h"
 #include "harlib/fastmatread.h"
 #include "render/SSView/SSViewScope.h"

@@ -288,7 +288,8 @@ void NPlotWidgetLabel::DrawHGrid(unsigned fcolor_axis,unsigned fcolor_minor,unsi
       //if(gridcenter==false)
 //         itoa(-i*xs,s,10);
   //    else
-         itoa(i*xs,s,10);
+         //itoa(i*xs,s,10);
+      sprintf(s,"%d",i*xs);
       //if(strlen(s)>5)
          //sprintf(s,"%dE%d",-factor*i,power);
       int sx = painter.fontMetrics().width(s);
