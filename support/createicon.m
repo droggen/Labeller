@@ -50,8 +50,8 @@ set(gca,'yticklabel','')
 
 r = 150; 
 
-sizes=[512 64 48 32 24];
-lss=[8 2 2 1 1];
+sizes=[512 256 64 48 32 24];
+lss=[8 4 2 2 1 1];
 
 for s=1:length(sizes)
     set(hl1,'LineWidth',lss(s));
