@@ -24,7 +24,7 @@ Labeller is a minimalistic labelling tool for files containing time series data.
 
 ## Screenshot
 
-![Labeller](/docs/img/ex0_crop.png)
+![Labeller](img/ex0_crop.png)
 
 ## Source code
 
