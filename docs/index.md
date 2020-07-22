@@ -7,3 +7,4 @@ title: Labeller
 
 Labeller is a data annotation tool for time series data.
 
+[Live application](wasm-latest/labeller.html)
