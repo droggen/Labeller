@@ -325,7 +325,7 @@
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>200</height>
+           <height>150</height>
           </size>
          </property>
          <property name="editTriggers">
@@ -359,19 +359,12 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>200</height>
+           <height>150</height>
           </size>
          </property>
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
      </widget>
     </item>
     <item>
@@ -389,18 +382,18 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="pb_1">
-      <property name="text">
-       <string>PushButton</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QLabel" name="label_8">
       <property name="text">
        <string>Left click: center. Right click: drag edge to resize instance, or add new instance. Delete: remove instance under cursor
 Mouse wheel: hor. scale. Enter, mouse wheel click: reset hor. scale. Shift-mouse wheel: vert. scale. Shift-mouse wheel click: vert. autoscale.
 Ctrl-mouse wheel: vertical pan</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pb_1">
+      <property name="text">
+       <string>PushButton</string>
       </property>
      </widget>
     </item>
