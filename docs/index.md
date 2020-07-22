@@ -17,7 +17,8 @@ title: Labeller
 Labeller is a minimalistic labelling tool for files containing time series data.
 
 * Data files are text files organised as a space/newline-separated matrix. Lines are samples. Columns are channels.
-* Labels are stored per-sample in a user-specified column. Label segments (instances) are identified by the tool as contiguous samples with identical label.
+* Labels are stored per-sample in a user-specified column. 
+* Label segments (instances) are identified by the tool as contiguous samples with identical label.
 * The tool allows to add, remove, edit labels.
 
 
