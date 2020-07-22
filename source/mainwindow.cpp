@@ -48,8 +48,18 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap curleft_pixmap(":/img/cursor-toleft2.png");
     QPixmap curright_pixmap(":/img/cursor-toright2.png");
 
+    // wasm does not support custom cursors
+#ifdef Q_OS_WASM
+    //curleft = QCursor(Qt::SplitHCursor);
+    //curright = QCursor(Qt::SplitHCursor);
+    curleft = QCursor(Qt::PointingHandCursor);
+    curright = QCursor(Qt::PointingHandCursor);
+    //curleft = QCursor(Qt::WhatsThisCursor);
+    //curright = QCursor(Qt::BusyCursor);
+#else
     curleft = QCursor(curleft_pixmap);
     curright = QCursor(curright_pixmap);
+#endif
 
 
     // Heuristic to find a proper scale
