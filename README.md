@@ -2,7 +2,7 @@
 
 Labeller is a minimalistic labelling tool for files containing time series data. 
 
-## [Try the live web application](wasm-latest/labeller.html)
+## [Try the live web application](http://labeller.danielroggen.net/wasm-latest/labeller.html)
 
 [More information in the dedicated github page](labeller.danielroggen.net)
 
