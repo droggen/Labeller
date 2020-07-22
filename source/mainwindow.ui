@@ -152,7 +152,7 @@
        </font>
       </property>
       <property name="title">
-       <string>Visualisation and label parameters</string>
+       <string>Visualisation parameters</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
@@ -389,7 +389,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="pb_1">
       <property name="text">
        <string>PushButton</string>
       </property>
@@ -433,9 +433,13 @@ Ctrl-mouse wheel: vertical pan</string>
      <string>&amp;File</string>
     </property>
     <addaction name="action_Load"/>
+    <addaction name="separator"/>
     <addaction name="action_Save_project"/>
     <addaction name="action_Open_project"/>
+    <addaction name="separator"/>
     <addaction name="action_Export_dataset"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad_demo"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -455,7 +459,6 @@ Ctrl-mouse wheel: vertical pan</string>
    <addaction name="menu_Edit"/>
    <addaction name="menu"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Load">
    <property name="text">
     <string>Load &amp;dataset</string>
@@ -479,7 +482,7 @@ Ctrl-mouse wheel: vertical pan</string>
   </action>
   <action name="action_Save_project">
    <property name="text">
-    <string>&amp;Save project</string>
+    <string>&amp;Save visualization parameters</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -495,7 +498,7 @@ Ctrl-mouse wheel: vertical pan</string>
   </action>
   <action name="action_Open_project">
    <property name="text">
-    <string>&amp;Open project</string>
+    <string>L&amp;oad visualization parameters</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -518,6 +521,14 @@ Ctrl-mouse wheel: vertical pan</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionLoad_demo">
+   <property name="text">
+    <string>Load &amp;demo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>

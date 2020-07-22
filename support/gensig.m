@@ -12,8 +12,11 @@ for fi = 1:length(fr)
     stmp = stmp*100;
     
     s=[s stmp];
-    l=[l ones(1,length(stmp))*fi];
-    
+    if fr(fi)==0
+        l=[l ones(1,length(stmp))*0];
+    else
+        l=[l ones(1,length(stmp))*fi];
+    end    
 end
 
 s2 = mod([1:length(s)],100);

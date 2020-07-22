@@ -16,6 +16,7 @@
 #include "dataset.h"
 #include <dialogenterlabel.h>
 #include "helpwindow.h"
+#include "dini.h"
 
 /*
  * TODOBUG
@@ -39,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 #ifdef DEVELMODE
     ConsoleInit();
+    ui->pb_1->setVisible(false);
+#else
+    ui->pb_1->setVisible(false);
 #endif
 
     QPixmap curleft_pixmap(":/img/cursor-toleft2.png");
@@ -119,6 +123,7 @@ void MainWindow::uiSetToNoDataset()
     ui->action_Export_dataset->setEnabled(false);
     ui->action_Undo_label_change->setEnabled(false);
     ui->action_Save_project->setEnabled(false);
+    ui->action_Open_project->setEnabled(false);
 
     // Set some of the parameters
     ui->uile_formatstring->setText(""); formatstring="";
@@ -151,6 +156,7 @@ int MainWindow::uiSetToDataset()
     ui->action_Export_dataset->setEnabled(true);
     ui->action_Undo_label_change->setEnabled(true);
     ui->action_Save_project->setEnabled(true);
+    ui->action_Open_project->setEnabled(true);
 
     // Update info about dataset in UI
     ui->uil_data_filename->setText(QString::fromStdString(dataset.filename_nopath));
@@ -182,8 +188,11 @@ void MainWindow::uiPrepareDefaultFromDataset()
 }
 void MainWindow::on_action_Load_triggered()
 {
-    //loadPromptSync();
+#ifdef Q_OS_WASM
     loadPromptAsync();
+#else
+    loadPromptSync();
+#endif
 }
 void MainWindow::loadPromptSync()
 {
@@ -224,7 +233,7 @@ void MainWindow::loadPromptAsync()
 
     auto fileContentReady = [this](const QString &fileName, const QByteArray &fileContent) {
         printf("fileContentReady: this: %p\n",this);
-        this->loadAsynCompleted(fileName,fileContent);
+        this->loadAsyncCompleted(fileName,fileContent);
     };
     printf("Prior to call: this: %p\n",this);
     QFileDialog::getOpenFileContent("Data (*.dat *.txt);;All files (*)", fileContentReady);
@@ -247,7 +256,7 @@ void MainWindow::toto(const QString &fileName, const QByteArray &fileContent)
     }
 }
 
-void MainWindow::loadAsynCompleted(const QString &fileName, const QByteArray &fileContent)
+void MainWindow::loadAsyncCompleted(const QString &fileName, const QByteArray &fileContent)
 {
     printf("loadAsynCompleted\n");
     if(fileName.isEmpty())
@@ -265,8 +274,8 @@ void MainWindow::loadAsynCompleted(const QString &fileName, const QByteArray &fi
 
 
     dataset.filename = fileName.toStdString();
-    dataset.filename_nopath = fileName.toStdString();
-    dataset.filename_path = "<No path>";
+    dataset.filename_nopath = filename_nopath.toStdString();
+    dataset.filename_path = filename_path.toStdString();
 
     int rv;
     QByteArray fc = fileContent;
@@ -274,7 +283,7 @@ void MainWindow::loadAsynCompleted(const QString &fileName, const QByteArray &fi
 
     if(rv!=0)
     {
-        QMessageBox::critical(this,"Error", "Error loading file");
+        terminalPrint(QString("Error loading dataset file %1\n").arg(fileName));
         uiSetToNoDataset();
         return;
     }
@@ -1509,116 +1518,143 @@ QString MainWindow::nulllabelVecToString(std::vector<int> nulllabels)
 /******************************************************************************
   saveSettings
 *******************************************************************************
-Save the app configuration to QSettings.
 Returns 0 in case of success
 ******************************************************************************/
-int MainWindow::saveSettings(QString ini)
+QByteArray MainWindow::saveSettingsToByteArray()
 {
+    QMap<QString,QString> settings;
+    QByteArray settingsba;
 
-    QSettings *settings;
+    // Only 3 things to save: format string; nullclass; current label
 
-    if(ini==QString())
-        settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,"danielroggen","labeller");
-    else
-        settings=new QSettings(ini,QSettings::IniFormat);
+    settings["FormatString"]=formatstring;
+    settings["NullLabels"]=nulllabelVecToString(nulllabels);
+    settings["LabelChannel"]=QString("%1").arg(labelchannel);
 
-    if(settings->status()!=QSettings::NoError)
-        return true;
+    DIni::saveToByteArray(settings,settingsba);
 
-
-    printf("Storing settings to %s\n",settings->fileName().toStdString().c_str());
-    terminalPrint(QString("Storing settings to %1\n").arg(settings->fileName()));
-
-    // Only 4 things to save: format string; nullclass; current label; filename
-
-    settings->setValue("FormatString",formatstring);
-    settings->setValue("NullLabels",nulllabelVecToString(nulllabels));
-    settings->setValue("LabelChannel",labelchannel);
-    settings->setValue("Datafile",QString::fromStdString(dataset.filename));        // Absolute data
-
-    delete settings;
-
-    return false;
+    return settingsba;
 }
 
+void MainWindow::saveSettingsSync()
+{
+    QByteArray settingsba = saveSettingsToByteArray();
 
+
+    QString fileName = QFileDialog::getSaveFileName(this, "Save settings",QString(),"Settings (*.ini)");
+    if(fileName.isNull())
+        return;
+
+    QFile file(fileName);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        terminalPrint(QString("Cannot write settings to %1\n").arg(fileName));
+        return;
+    }
+    file.write(settingsba);
+    file.close();
+
+    terminalPrint(QString("Settings saved to %1\n").arg(fileName));
+}
+void MainWindow::saveSettingsAsync()
+{
+    // Wasm version
+    QByteArray settingsba = saveSettingsToByteArray();
+
+
+    // Suggested file name
+    QString fn = QString("%1.ini").arg(QString::fromStdString(dataset.filename));
+    QFileDialog::saveFileContent(settingsba, fn);
+
+    // Wasm: no confirmation that the file was saved
+    //terminalPrint(QString("Settings saved to %1\n").arg(fileName));
+}
 
 void MainWindow::on_action_Save_project_triggered()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save settings",QString(),"Labelling project (*.lpb)");
-    if(!fileName.isNull())
-    {
-        bool rv = saveSettings(fileName);
-        if(rv)
-            QMessageBox::critical(this, "Save settings error", "Cannot write to file");
-    }
+#if defined Q_OS_WASM
+    saveSettingsAsync();
+#else
+    saveSettingsSync();
+#endif
 }
 
 void MainWindow::on_action_Open_project_triggered()
 {
-    // Open project
-    QString fileName = QFileDialog::getOpenFileName(this, "Load settings",QString(),"Labelling project (*.lpb)");
-    if(!fileName.isNull())
-       loadSettings(fileName);
+#if defined Q_OS_WASM
+    loadSettingsAsync();
+#else
+    loadSettingsSync();
+#endif
 }
-int MainWindow::loadSettings(QString fileName)
+
+void MainWindow::loadSettingsSync()
 {
+    // Open project
+    QString fileName = QFileDialog::getOpenFileName(this, "Load settings",QString(),"Settings (*.ini)");
+    if(fileName.isNull())
+        return;
+
+    QMap<QString, QString> settings;
+    int rv = DIni::load(fileName,settings);
+    if(rv!=0)
+    {
+        terminalPrint(QString("Cannot load settings from %1\n").arg(fileName));
+        return;
+    }
+    loadSettingsApply(settings);
+}
+void MainWindow::loadSettingsAsync()
+{
+    auto fileContentReady = [this](const QString &fileName, const QByteArray &fileContent) {
+        printf("fileContentReady: this: %p\n",this);
+        QMap<QString, QString> settings;
+        DIni::loadFromByteArray(fileContent,settings);
+        loadSettingsApply(settings);
+    };
+
+    QFileDialog::getOpenFileContent("Settings (*.ini)", fileContentReady);
+}
+
+void MainWindow::loadSettingsApply(QMap<QString,QString> settings)
+{
+    terminalPrint("Applying settings...\n");
+
+    formatstring = settings["FormatString"];
+
+    int channel;
+    bool ok;
+    channel = settings["LabelChannel"].toInt(&ok);
+    if(!ok) channel=0;
 
 
-    QSettings *settings;
-
-    if(fileName==QString())
-        settings = new QSettings(QSettings::IniFormat,QSettings::UserScope,"danielroggen","dscopeqt");
-    else
-        settings = new QSettings(fileName,QSettings::IniFormat);
-
-    if(settings->status()!=QSettings::NoError)
-        return true -1;
-
-    // Clear all dataset and state variables
-    clearAllState();
-    // Set the UI to no dataset (deactivate the UI elements)
-    uiSetToNoDataset();
-
-
-    QString s_formatstring = settings->value("FormatString","").toString();
-    QString s_nulllabelstr = settings->value("NullLabels","0").toString();
-    int s_labelchannel = settings->value("LabelChannel",0).toInt();
-    QString datafile = settings->value("Datafile","").toString();
-
-    // Try load dataset; failure: return
-    if(loadDataset(datafile)!=0)
-        return 1;
-
-    // Fill the
-    ui->uile_null_label->setText(s_nulllabelstr);
-    ui->uile_formatstring->setText(s_formatstring); formatstring=s_formatstring;
-    labelchannel=s_labelchannel;
-    // Limit the label spin box to the range of channels
-    ui->uisb_labelchannel->setMaximum(dataset.sx-1);
+    // Update the UI
+    ui->uile_null_label->setText(settings["NullLabels"]);
+    ui->uile_formatstring->setText(formatstring);
+    labelchannel=channel;
     ui->uisb_labelchannel->setValue(labelchannel);
 
     on_uipb_apply_clicked();
 
-    uiSetToDataset();
-
-
-    return 0;
 }
 
 void MainWindow::on_action_About_triggered()
 {
     QMessageBox::about(this, "About",
     "<p><b>Labeller</b></p>\n"
-    "<p>Version 0.9</p>"
+    "<p>Version 0.95</p>"
     "<p>(c) 2020 Daniel Roggen</p>");
 }
 
 void MainWindow::on_action_Export_dataset_triggered()
 {
-    //exportSync();
+#ifdef Q_OS_WASM
     exportAsync();
+#else
+    exportSync();
+#endif
 }
+
 void MainWindow::exportSync()
 {
     // Export annotated dataset
@@ -1875,4 +1911,52 @@ void MainWindow::on_pushButton_clicked()
     dialogGetLabelID2(callback,"Test input","Test title");
 
     //addColumnAsync();*/
+
+    // Get a file to load and try Dini
+
+    // Pop up window
+    QString fileName = QFileDialog::getOpenFileName(this, "Load data",QString(),"Ini (*.ini);;All files (*)");
+
+    // No file: return
+    if(fileName.isNull())
+        return;
+
+    QMap<QString, QString> data;
+    if(DIni::load(fileName,data)!=0)
+        printf("Cannot load INI file\n");
+
+    DIni::print(data);
+
+
+}
+
+void MainWindow::on_actionLoad_demo_triggered()
+{
+    terminalPrint("Loading demo signals\n");
+
+    // Clear all dataset and state variables
+    clearAllState();
+    // Set the UI to no dataset (deactivate the UI elements)
+    uiSetToNoDataset();
+
+    QString fileName=":/res/sig.txt";
+
+    // Try load dataset; failure: return
+    if(loadDataset(fileName)!=0)
+    {
+        uiSetToNoDataset();
+        return;
+    }
+
+    // Enable user interface
+    uiSetToDataset();
+    // Setup UI according to loaded dataset; also sets label spin box max value
+    uiPrepareDefaultFromDataset();
+
+    // Load settings
+    QMap<QString,QString> settings;
+    DIni::load(":/res/sig.txt.ini",settings);
+
+    // Apply settings, which creates the views
+    loadSettingsApply(settings);
 }

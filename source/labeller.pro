@@ -23,6 +23,7 @@ SOURCES += \
     data.cpp \
     dataset.cpp \
     dialogenterlabel.cpp \
+    dini.cpp \
     dlinereader.cpp \
     dterminal.cpp \
     helper.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     data.h \
     dataset.h \
     dialogenterlabel.h \
+    dini.h \
     dlinereader.h \
     dterminal.h \
     helper.h \

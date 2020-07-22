@@ -169,13 +169,17 @@ private:
     int nulllabelStringToVec(QString str,std::vector<int> &nl);
     QString nulllabelVecToString(std::vector<int> nulllabels);
 
-    int saveSettings(QString ini);
-    int loadSettings(QString fileName);
+    QByteArray saveSettingsToByteArray();
+    void saveSettingsSync();
+    void saveSettingsAsync();
+    void loadSettingsAsync();
+    void loadSettingsSync();
+    void loadSettingsApply(QMap<QString,QString> settings);
 
     void loadPromptSync();
     void loadPromptAsync();
     static void toto(const QString &fn, const QByteArray &ba);
-    void loadAsynCompleted(const QString &fileName, const QByteArray &fileContent);
+    void loadAsyncCompleted(const QString &fileName, const QByteArray &fileContent);
     void exportSync();
     void exportAsync();
 
@@ -185,6 +189,7 @@ signals:
 private slots:
     void errorDialog(QString text);
     void slotAddColumn_GetLabel();
+    void on_actionLoad_demo_triggered();
 };
 
 

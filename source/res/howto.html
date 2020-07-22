@@ -7,19 +7,21 @@ Labeller is a minimalistic labelling tool for files containing time series data.
 <h3>Quick start</h3>
 <p>
 <ol>
-   <li>Load a dataset. See <a href="#dataset">Dataset format</a> for information on the dataset format.</li>
+   <li>Load a dataset. See <a href="#dataset" target="_self">Dataset format</a> for information on the dataset format.</li>
    <li>Set a <a href="#format">dataset visualisation format</a> by specifying a format string.</li>
    <li>Set the <a href="#null">null class values</a>.</li>
    <li>Select <i>Apply</i>.</li>
    <li>Select which is the column containing the label channel and press <i>Confirm label</i>.</li>
    <li><a href="#annotation">Annotate the data</a>.</li>
-   <li>Save a project or export the annotated data.</li>
+   <li>Export the annotated data.</li>
+   <li>The visualisation format can also be loaded with <i>Load visualisation parameters</i>.</li>
 </ol>
 </p>
 <p>
 The software offers additional features:
 <ul>
    <li>A new data channel can be added from the Edit menu. This may be used to add an annotation channel to a data file.</li>
+   <li>A demo signal can be loaded from the File menu for tryouts.</li>
 </ul>
 </p>
 
@@ -28,6 +30,9 @@ The software offers additional features:
 Datasets are text files containing a matrix of data separated by space and newline.
 Each line corresponds to a sample.
 Each column corresponds to a data channel.
+</p>
+<p>
+Currently only integer data is supported; any non-integer value is rounded to integer.
 </p>
 <p>
 The labels of the data are stored as one channel of the dataset.
@@ -51,7 +56,7 @@ The syntax is: <i>&lt;title;traces[;xscale=xs][;yscale=auto|min max][;color=colo
    <li>colors: space separated list of trace colors in hexadecimal format RRGGBB </li>
 </ul>
 </p>
-<h4>Example</h4>
+<h4>Example 1</h4>
 <p>
 The format string below shows two scopes. Each scope contains 3 traces: the first contains the traces 0, 1, and 2, and the second contains the traces 3, 4, and 5.
 </p>
@@ -61,6 +66,7 @@ The format string below shows two scopes. Each scope contains 3 traces: the firs
 &lt;Gyroscope;3 4 5;yscale=auto&gt;
 </i>
 </p>
+<h4>Example 2</h4>
 <p>
 The following display format string displays two scopes. The first shows traces number 5, 6 and 7, in red, green and blue respectively, with manual vertical scale, default horizontal scale, and the title Calibrated.
 </p>
@@ -98,6 +104,8 @@ The data can be annotated as follows:
 </ul>
 </p>
 
+<p>
+</p>
 
 
 
