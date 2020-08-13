@@ -3,7 +3,7 @@ layout: default
 title: Labeller
 ---
 
-# Labeller: Time series data annotation tool
+# Time series data annotation tool
 
 ## Live web application
 
@@ -21,6 +21,10 @@ Labeller is a minimalistic labelling tool for files containing time series data.
 * Label segments (instances) are identified by the tool as contiguous samples with identical label.
 * The tool allows to add, remove, edit labels.
 
+
+## Screenshot
+
+![Labeller](img/ex0_crop.png)
 
 ## Source code
 
